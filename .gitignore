@@ -1,0 +1,23 @@
+
+## Build results (Binary files)
+[Dd]ebug/
+[Rr]elease/
+bin/
+obj/
+publish/
+
+## Visual Studio & User-specific files
+.vs/
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+
+## Specific config overrides
+# Keep appsettings.json in Git, but ignore these local variants
+appsettings.local.json
+secrets.json
+
+## Common OS files
+.DS_Store
+Thumbs.db

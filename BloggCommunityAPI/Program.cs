@@ -1,0 +1,73 @@
+using BloggCommunityAPI.Core.Interfaces;
+using BloggCommunityAPI.Core.Services;
+using BloggCommunityAPI.Data;
+using BloggCommunityAPI.Data.Interfaces;
+using BloggCommunityAPI.Data.Repos;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+
+
+var builder = WebApplication.CreateBuilder(args);
+
+
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<BlogDbContext>(options =>
+    options.UseSqlServer(connectionString));
+
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+//Repos
+builder.Services.AddScoped<IUserRepo, UserRepo>();
+builder.Services.AddScoped<IBlogPostRepo, BlogPostRepo>();
+builder.Services.AddScoped<ICommentRepo, CommentRepo>();
+builder.Services.AddScoped<ICategoryRepo, CategoryRepo>();
+
+//Services
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IBlogPostService, BlogPostService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ICommentService, CommentService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+
+//JWT
+var jwtSettings = builder.Configuration.GetSection("Jwt");
+var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]!);
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtSettings["Issuer"],
+            ValidAudience = jwtSettings["Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(key)
+        };
+    });
+
+builder.Services.AddAuthorization();
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+app.UseAuthentication();
+app.UseAuthorization();
+
+//app.UseRouting();
+//app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+
+app.MapControllers();
+app.Run();

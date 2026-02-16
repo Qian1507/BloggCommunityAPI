@@ -17,7 +17,7 @@ namespace BloggCommunityAPI.Core.Services
             _categoryRepo = categoryRepo;
         }
 
-        public async Task<BlogPost?> CreatePostAsync(int userId, PostCreateDto dto)
+        public async Task<PostResponseDto?> CreatePostAsync(int userId, PostCreateDto dto)
         {
             var category = await _categoryRepo.GetByIdAsync(dto.CategoryId);
             if (category == null) return null;
@@ -35,7 +35,8 @@ namespace BloggCommunityAPI.Core.Services
             var saved = await _blogPostRepo.SaveChangesAsync();
             if (!saved) return null;
 
-            return post;
+            post.Category = category;
+            return MapToResponseDto(post);
         }
 
         public async Task<bool> UpdatePostAsync(int postId, int userId, PostUpdateDto dto)
@@ -63,30 +64,53 @@ namespace BloggCommunityAPI.Core.Services
             return await _blogPostRepo.SaveChangesAsync();
         }
 
-        public async Task<BlogPost?> GetPostByIdAsync(int id)
+        public async Task<PostResponseDto?> GetPostByIdAsync(int id)
         {
-            return await _blogPostRepo.GetByIdAsync(id);
+            var post = await _blogPostRepo.GetByIdAsync(id);
+            return post == null ? null :MapToResponseDto(post);
+           
         }
 
-        public async Task<IEnumerable<BlogPost>> GetAllPostsAsync()
+        public async Task<IEnumerable<PostResponseDto>> GetAllPostsAsync()
         {
-            return await _blogPostRepo.GetAllPostsAsync();
+            var posts= await _blogPostRepo.GetAllPostsAsync();
+            return posts.Select(MapToResponseDto);
         }
 
-        public async Task<IEnumerable<BlogPost>> GetPostsByUserIdAsync(int userId)
+        public async Task<IEnumerable<PostResponseDto>> GetPostsByUserIdAsync(int userId)
         {
-            return await _blogPostRepo.GetByUserIdAsync(userId);
+            var posts= await _blogPostRepo.GetByUserIdAsync(userId);
+            return posts.Select(MapToResponseDto);
         }
 
-        public async Task<IEnumerable<BlogPost>> GetPostsByCategoryIdAsync(int categoryId)
+        public async Task<IEnumerable<PostResponseDto>> GetPostsByCategoryIdAsync(int categoryId)
         {
-            return await _blogPostRepo.GetByCategoryIdAsync(categoryId);
+            var posts= await _blogPostRepo.GetByCategoryIdAsync(categoryId);
+            return posts.Select(MapToResponseDto);
         }
 
-        public async Task<IEnumerable<BlogPost>> SearchPostsByTitleAsync(string title)
+        public async Task<IEnumerable<PostResponseDto>> SearchPostsByTitleAsync(string title)
         {
-            return await _blogPostRepo.SearchByTitleAsync(title);
+            var posts= await _blogPostRepo.SearchByTitleAsync(title);
+            return posts.Select(MapToResponseDto);
         }
 
+
+
+        // Helper method to keep code DRY (Don't Repeat Yourself)
+        private PostResponseDto MapToResponseDto(BlogPost post)
+        {
+            return new PostResponseDto
+            {
+                Id = post.Id,
+                Title = post.Title,
+                Text = post.Text,
+                CreatedAt = post.CreatedAt,
+                CategoryId = post.CategoryId,
+                CategoryName = post.Category?.Name, // Works thanks to your Repo .Include()
+                UserId = post.UserId,
+                UserName = post.User?.UserName
+            };
+        }
     }
 }

@@ -3,10 +3,8 @@ using BloggCommunityAPI.Core.Services;
 using BloggCommunityAPI.Data;
 using BloggCommunityAPI.Data.Interfaces;
 using BloggCommunityAPI.Data.Repos;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using System;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 

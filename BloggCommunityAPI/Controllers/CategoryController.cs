@@ -18,16 +18,17 @@ namespace BloggCommunityAPI.Controllers
         }
 
 
-        // GET: api/Category
-        [HttpGet]
+        // GET: api/Category/getall
+        [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
             var categories = await _categoryService.GetAllAsync();
             return Ok(categories);
         }
 
-        // GET: api/Category/5
-        [HttpGet("{id}")]
+
+        // GET: api/Category/getbyid
+        [HttpGet("GetById/{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             var category = await _categoryService.GetByIdAsync(id);
@@ -36,9 +37,9 @@ namespace BloggCommunityAPI.Controllers
         }
 
         
-        // POST: api/Category
+        // POST: api/Category/create
         // Only authorized users or admins should create categories
-        [HttpPost]
+        [HttpPost("Create")]
         [Authorize] 
         public async Task<IActionResult> Create([FromBody] CategoryDto dto)
         {
@@ -50,8 +51,8 @@ namespace BloggCommunityAPI.Controllers
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
-        // PUT: api/Category/5
-        [HttpPut("{id}")]
+        // PUT: api/Category/update
+        [HttpPut("Update/{id}")]
         [Authorize]
         public async Task<IActionResult> Update(int id, [FromBody] CategoryDto dto)
         {
@@ -60,8 +61,8 @@ namespace BloggCommunityAPI.Controllers
             return NoContent();
         }
 
-        // DELETE: api/Category/5
-        [HttpDelete("{id}")]
+        // DELETE: api/Category/delete
+        [HttpDelete("Delete/{id}")]
         [Authorize]
         public async Task<IActionResult> Delete(int id)
         {

@@ -1,7 +1,6 @@
 ﻿using BloggCommunityAPI.Core.Interfaces;
 using BloggCommunityAPI.Data.DTOs;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -19,16 +18,16 @@ namespace BloggCommunityAPI.Controllers
         }
 
 
-        // GET: api/Comment/post/5
-        [HttpGet("post/{postId}")]
+        // GET: api/Comment/GetBypPostId
+        [HttpGet("GetByPostId/{postId}")]
         public async Task<IActionResult> GetByPost(int postId)
         {
             var comments = await _commentService.GetCommentsByPostIdAsync(postId);
             return Ok(comments);
         }
 
-        // POST: api/Comment
-        [HttpPost]
+        // POST: api/Comment/Create
+        [HttpPost("Create")]
         [Authorize]
         public async Task<IActionResult> Create([FromBody] CommentCreateDto dto)
         {
@@ -46,8 +45,8 @@ namespace BloggCommunityAPI.Controllers
             return Ok(result);
         }
 
-        // DELETE: api/Comment/10
-        [HttpDelete("{id}")]
+        // DELETE: api/Comment/Delete
+        [HttpDelete("Delete/{id}")]
         [Authorize]
         public async Task<IActionResult> Delete(int id)
         {

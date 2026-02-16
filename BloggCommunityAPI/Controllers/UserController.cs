@@ -1,6 +1,5 @@
 ﻿using BloggCommunityAPI.Core.Interfaces;
 using BloggCommunityAPI.Data.DTOs;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BloggCommunityAPI.Controllers
@@ -17,7 +16,10 @@ namespace BloggCommunityAPI.Controllers
         }
 
 
-        [HttpGet("{id}")]
+
+        // GET api/User/by-id/{id}
+
+        [HttpGet("by-id/{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             var user = await _userService.GetByIdAsync(id);
@@ -26,7 +28,11 @@ namespace BloggCommunityAPI.Controllers
             return Ok(new { user.Id, user.UserName, user.Email });
         }
 
-        [HttpGet]
+
+
+        // GET api/User/all
+
+        [HttpGet("All")]
         [ProducesResponseType(StatusCodes.Status200OK)]              
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAll()
@@ -37,7 +43,7 @@ namespace BloggCommunityAPI.Controllers
 
 
 
-
+        // POST api/User/register
 
         [HttpPost("register")]
         [ProducesResponseType(StatusCodes.Status200OK)]             
@@ -49,6 +55,10 @@ namespace BloggCommunityAPI.Controllers
 
             return Ok(new { message = "Registration successful", userId = user.Id });
         }
+
+
+
+        // POST api/User/login
 
         [HttpPost("login")]
         [ProducesResponseType(StatusCodes.Status200OK)]             
@@ -62,7 +72,9 @@ namespace BloggCommunityAPI.Controllers
         }
 
 
-        [HttpDelete("{id}")]
+
+        // DELETE api/User/delete/{id}
+        [HttpDelete("delete/{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]    
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(int id)
@@ -73,7 +85,10 @@ namespace BloggCommunityAPI.Controllers
             return NoContent();
         }
 
-        [HttpPut("{id}")]
+
+        // PUT api/User/update/{id}
+
+        [HttpPut("update/{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]          
         [ProducesResponseType(StatusCodes.Status400BadRequest)]         
         [ProducesResponseType(StatusCodes.Status404NotFound)]           

@@ -22,16 +22,17 @@ namespace BloggCommunityAPI.Controllers
 
 
 
-        // GET: api/BlogPost
-        [HttpGet]
+        // GET: api/BlogPost/getall
+        [HttpGet("GetAll")]
         public async Task<IActionResult> GetAllPosts()
         {
             var posts = await _blogPostService.GetAllPostsAsync();
             return Ok(posts);
         }
 
-        // GET: api/BlogPost/5
-        [HttpGet("{id}")]
+
+        // GET: api/BlogPost/by-id/{id}
+        [HttpGet("by-Id/{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             var post = await _blogPostService.GetPostByIdAsync(id);
@@ -39,7 +40,8 @@ namespace BloggCommunityAPI.Controllers
             return Ok(post);
         }
 
-        // GET: api/BlogPost/by-user/3
+
+        // GET: api/BlogPost/by-user/{userId}
         [HttpGet("by-user/{userId}")]
         public async Task<IActionResult> GetByUser(int userId)
         {
@@ -47,13 +49,15 @@ namespace BloggCommunityAPI.Controllers
             return Ok(posts);
         }
 
-        // GET: api/BlogPost/by-category/2
+
+        // GET: api/BlogPost/by-category/{categoryId}
         [HttpGet("by-category/{categoryId}")]
         public async Task<IActionResult> GetByCategory(int categoryId)
         {
             var posts = await _blogPostService.GetPostsByCategoryIdAsync(categoryId);
             return Ok(posts);
         }
+
 
         // GET: api/BlogPost/search?title=xxx
         [HttpGet("search")]
@@ -66,8 +70,8 @@ namespace BloggCommunityAPI.Controllers
 
    
 
-        // POST: api/BlogPost
-        [HttpPost]
+        // POST: api/BlogPost/create
+        [HttpPost("create")]
         [Authorize]
         public async Task<IActionResult> Create([FromBody] PostCreateDto dto)
         {
@@ -75,14 +79,15 @@ namespace BloggCommunityAPI.Controllers
             if(userId == null) return Unauthorized();
 
             
-            var post = await _blogPostService.CreatePostAsync(userId.Value, dto);
-            if (post == null) return BadRequest("Category not found or failed to create post");
+            var response = await _blogPostService.CreatePostAsync(userId.Value, dto);
+            if (response == null) return BadRequest("Category not found or failed to create post");
 
-            return CreatedAtAction(nameof(GetById), new { id = post.Id }, post);
+           return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
+           
         }
 
-        // PUT: api/BlogPost/5
-        [HttpPut("{id}")]
+        // PUT: api/BlogPost/update/{id}
+        [HttpPut("update/{id}")]
         [Authorize]
         public async Task<IActionResult> Update(int id, [FromBody] PostUpdateDto dto)
         {
@@ -97,8 +102,8 @@ namespace BloggCommunityAPI.Controllers
             return NoContent();
         }
 
-        // DELETE: api/BlogPost/5
-        [HttpDelete("{id}")]
+        // DELETE: api/BlogPost/delete/{id}
+        [HttpDelete("delete/{id}")]
         [Authorize]
         public async Task<IActionResult> Delete(int id)
         {

@@ -97,7 +97,7 @@ namespace BloggCommunityAPI.Core.Services
 
 
 
-        // Helper method to keep code DRY (Don't Repeat Yourself)
+        // Helper method to keep code DRY 
         private PostResponseDto MapToResponseDto(BlogPost post)
         {
             return new PostResponseDto
@@ -107,7 +107,7 @@ namespace BloggCommunityAPI.Core.Services
                 Text = post.Text,
                 CreatedAt = post.CreatedAt,
                 CategoryId = post.CategoryId,
-                CategoryName = post.Category?.Name, // Works thanks to your Repo .Include()
+                CategoryName = post.Category?.Name, 
                 UserId = post.UserId,
                 UserName = post.User?.UserName
             };

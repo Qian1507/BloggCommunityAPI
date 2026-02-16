@@ -38,7 +38,7 @@ namespace BloggCommunityAPI.Controllers
 
             if (result == null)
             {
-                // This covers: Post not found OR user trying to comment on their own post
+                
                 return BadRequest("Invalid request: Post not found or you cannot comment on your own post.");
             }
 
@@ -55,7 +55,7 @@ namespace BloggCommunityAPI.Controllers
 
             var success = await _commentService.DeleteCommentAsync(id, userId.Value);
 
-            if (!success) return Forbid(); // User is not the author or comment doesn't exist
+            if (!success) return Forbid(); 
 
             return NoContent();
         }

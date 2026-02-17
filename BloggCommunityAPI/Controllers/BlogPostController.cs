@@ -13,16 +13,20 @@ namespace BloggCommunityAPI.Controllers
     public class BlogPostController : ControllerBase
     {
         private readonly IBlogPostService _blogPostService;
+        private readonly IUserService _userService;
 
-        public BlogPostController(IBlogPostService blogPostService)
+        public BlogPostController(IBlogPostService blogPostService, IUserService userService)
         {
             _blogPostService = blogPostService;
+            _userService = userService;
         }
 
 
 
 
-        // GET: api/BlogPost/getall
+
+
+        // GET: api/BlogPost/Getall
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAllPosts()
         {
@@ -32,7 +36,8 @@ namespace BloggCommunityAPI.Controllers
 
 
         // GET: api/BlogPost/by-id/{id}
-        [HttpGet("by-Id/{id}")]
+       [HttpGet("By-Id/{id}")]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<IActionResult> GetById(int id)
         {
             var post = await _blogPostService.GetPostByIdAsync(id);
@@ -41,17 +46,11 @@ namespace BloggCommunityAPI.Controllers
         }
 
 
-        // GET: api/BlogPost/by-user/{userId}
-        [HttpGet("by-user/{userId}")]
-        public async Task<IActionResult> GetByUser(int userId)
-        {
-            var posts = await _blogPostService.GetPostsByUserIdAsync(userId);
-            return Ok(posts);
-        }
 
+        
 
-        // GET: api/BlogPost/by-category/{categoryId}
-        [HttpGet("by-category/{categoryId}")]
+        // GET: api/BlogPost/Filter/{categoryId}
+        [HttpGet("Filter/{categoryId}")]
         public async Task<IActionResult> GetByCategory(int categoryId)
         {
             var posts = await _blogPostService.GetPostsByCategoryIdAsync(categoryId);
@@ -59,8 +58,10 @@ namespace BloggCommunityAPI.Controllers
         }
 
 
+
+      
         // GET: api/BlogPost/search?title=xxx
-        [HttpGet("search")]
+        [HttpGet("Search")]
         public async Task<IActionResult> Search([FromQuery] string title)
         {
             if (string.IsNullOrWhiteSpace(title)) return BadRequest("Search title cannot be empty");
@@ -68,17 +69,19 @@ namespace BloggCommunityAPI.Controllers
             return Ok(posts);
         }
 
-   
+        
 
         // POST: api/BlogPost/create
-        [HttpPost("create")]
+        [HttpPost("Create")]
         [Authorize]
         public async Task<IActionResult> Create([FromBody] PostCreateDto dto)
         {
             var userId = GetCurrentUserId();
             if(userId == null) return Unauthorized();
 
-            
+            var user = await _userService.GetByIdAsync(userId!.Value);
+            if (user == null) return Unauthorized("Account no longer exists.");
+
             var response = await _blogPostService.CreatePostAsync(userId.Value, dto);
             if (response == null) return BadRequest("Category not found or failed to create post");
 
@@ -86,33 +89,56 @@ namespace BloggCommunityAPI.Controllers
            
         }
 
+        
+
         // PUT: api/BlogPost/update/{id}
-        [HttpPut("update/{id}")]
+        [HttpPut("Update/{id}")]
         [Authorize]
         public async Task<IActionResult> Update(int id, [FromBody] PostUpdateDto dto)
         {
-            
 
             var userId = GetCurrentUserId()  ;
             if(userId ==null) return Unauthorized();
 
+            var user = await _userService.GetByIdAsync(userId.Value);
+            if (user == null) return Unauthorized();
+
+            var post = await _blogPostService.GetPostByIdAsync(id);
+            if (post == null) return NotFound($"Post with ID {id} not found.");
+
+            
+            if (post.UserId != userId.Value) return Forbid();
+
             var success = await _blogPostService.UpdatePostAsync(id, userId.Value, dto);
 
-            if (!success) return Forbid(); 
+            if (!success) return BadRequest("Update failed.");
             return NoContent();
         }
 
+
+
+        
+
         // DELETE: api/BlogPost/delete/{id}
-        [HttpDelete("delete/{id}")]
+        [HttpDelete("Delete/{id}")]
         [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
             var userId = GetCurrentUserId() ;
             if(userId == null) return Unauthorized();
 
+            var post = await _blogPostService.GetPostByIdAsync(id);
+            if (post == null)
+            {
+                return NotFound($"Post with ID {id} not found.");
+            }
+            if (post.UserId != userId.Value)
+            {
+                return Forbid(); 
+            }
             var success = await _blogPostService.DeletePostAsync(id, userId.Value);
 
-            if (!success) return NotFound(); 
+            if (!success) return BadRequest("Could not delete post."); 
             return NoContent();
         }
 

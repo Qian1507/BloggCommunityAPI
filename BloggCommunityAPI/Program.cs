@@ -21,6 +21,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
 //Repos
 builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<IBlogPostRepo, BlogPostRepo>();
@@ -63,9 +64,6 @@ if (app.Environment.IsDevelopment())
 }
 app.UseAuthentication();
 app.UseAuthorization();
-
-//app.UseRouting();
-//app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
 app.MapControllers();
 app.Run();

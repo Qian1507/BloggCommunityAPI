@@ -1,5 +1,7 @@
 ﻿using BloggCommunityAPI.Core.Interfaces;
 using BloggCommunityAPI.Data.DTOs;
+using BloggCommunityAPI.Data.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BloggCommunityAPI.Controllers
@@ -17,35 +19,9 @@ namespace BloggCommunityAPI.Controllers
 
 
 
-        // GET api/User/by-id/{id}
-
-        [HttpGet("by-id/{id}")]
-        public async Task<IActionResult> GetById(int id)
-        {
-            var user = await _userService.GetByIdAsync(id);
-            if (user == null) return NotFound();
-
-            return Ok(new { user.Id, user.UserName, user.Email });
-        }
-
-
-
-        // GET api/User/all
-
-        [HttpGet("All")]
-        [ProducesResponseType(StatusCodes.Status200OK)]              
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetAll()
-        {
-            var users = await _userService.GetAllUsersAsync();
-            return Ok(users.Select(u => new { u.Id, u.UserName, u.Email }));
-        }
-
-
-
         // POST api/User/register
 
-        [HttpPost("register")]
+        [HttpPost("Register")]
         [ProducesResponseType(StatusCodes.Status200OK)]             
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Register(RegisterDto registerDto)
@@ -60,7 +36,7 @@ namespace BloggCommunityAPI.Controllers
 
         // POST api/User/login
 
-        [HttpPost("login")]
+        [HttpPost("Login")]
         [ProducesResponseType(StatusCodes.Status200OK)]             
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Login(LoginDto loginDto)
@@ -73,36 +49,60 @@ namespace BloggCommunityAPI.Controllers
 
 
 
-        // DELETE api/User/delete/{id}
-        [HttpDelete("delete/{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]    
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Delete(int id)
+        // DELETE api/User/delete
+        [HttpDelete("Delete")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> Delete()
         {
-            var success = await _userService.DeleteUserAsync(id);
+            var currentUserId = GetCurrentUserId();
+            if (currentUserId == null) return Unauthorized();
+
+            var user = await _userService.GetByIdAsync(currentUserId.Value);
+            if (user == null)
+            {
+
+                return NotFound("Your account has been deleted and cannot be updated.");
+            }
+
+            var success = await _userService.DeleteUserAsync(currentUserId.Value);
             if (!success) return NotFound();
 
             return NoContent();
         }
 
 
-        // PUT api/User/update/{id}
+        // PUT api/User/update
 
-        [HttpPut("update/{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]          
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]         
-        [ProducesResponseType(StatusCodes.Status404NotFound)]           
-        public async Task<IActionResult> Update(int id, UserUpdateDto dto)
+        [HttpPut("Update")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> Update([FromBody] UserUpdateDto dto)
         {
-            var user = await _userService.GetByIdAsync(id);
-            if (user == null) return NotFound();
+            var userId = GetCurrentUserId();
+  
+            if (userId == null) return Unauthorized();
 
-            var success = await _userService.UpdateUserAsync(id, dto.UserName, dto.Email);
+            var user = await _userService.GetByIdAsync(userId.Value);
+            if (user == null)
+            {
+                
+                return NotFound("Your account has been deleted and cannot be updated.");
+            }
+
+            var success = await _userService.UpdateUserAsync(userId.Value, dto);
             if (!success) return BadRequest("Username or Email already exists.");
 
             return NoContent();
         }
 
-
+        //Hlep method
+        private int? GetCurrentUserId()
+        {
+            var idClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            return (idClaim != null && int.TryParse(idClaim.Value, out int id)) ? id : null;
+        }
     }
 }

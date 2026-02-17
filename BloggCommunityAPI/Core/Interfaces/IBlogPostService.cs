@@ -11,7 +11,7 @@ namespace BloggCommunityAPI.Core.Interfaces
 
         Task<PostResponseDto?> GetPostByIdAsync(int id);
         Task<IEnumerable<PostResponseDto>> GetAllPostsAsync();
-        Task<IEnumerable<PostResponseDto>> GetPostsByUserIdAsync(int userId);
+        //Task<IEnumerable<PostResponseDto>> GetPostsByUserIdAsync(int userId);
         Task<IEnumerable<PostResponseDto>> GetPostsByCategoryIdAsync(int categoryId);
         Task<IEnumerable<PostResponseDto>> SearchPostsByTitleAsync(string title);
 

@@ -16,19 +16,19 @@ namespace BloggCommunityAPI.Core.Services
             _commentRepo = commentRepo;
             _postRepo = postRepo;
         }
-        public async Task<IEnumerable<CommentResponseDto>> GetCommentsByPostIdAsync(int postId)
-        {
-            var comments = await _commentRepo.GetByPostIdAsync(postId);
-            return comments.Select(c => new CommentResponseDto
-            {
-                Id = c.Id,
-                Text = c.Text,
-                UserName = c.User?.UserName ?? "Anonymous",
-                CreatedAt = c.CreatedAt,
-                UserId = c.UserId,
-                BlogPostId = c.BlogPostId,
-            });
-        }
+        //public async Task<IEnumerable<CommentResponseDto>> GetCommentsByPostIdAsync(int postId)
+        //{
+        //    var comments = await _commentRepo.GetByPostIdAsync(postId);
+        //    return comments.Select(c => new CommentResponseDto
+        //    {
+        //        Id = c.Id,
+        //        Text = c.Text,
+        //        UserName = c.User?.UserName ?? "Anonymous",
+        //        CreatedAt = c.CreatedAt,
+        //        UserId = c.UserId,
+        //        BlogPostId = c.BlogPostId,
+        //    });
+        //}
         public async Task<CommentResponseDto?> CreateCommentAsync(int userId, CommentCreateDto dto)
         {
             var post = await _postRepo.GetByIdAsync(dto.PostId);
@@ -41,13 +41,14 @@ namespace BloggCommunityAPI.Core.Services
             {
                 return null; 
             }
-
+            
+            var now = DateTime.UtcNow;
             var comment = new Comment
             {
                 Text = dto.Text,
                 BlogPostId = dto.PostId,
                 UserId = userId,
-                CreatedAt=DateTime.UtcNow,
+                CreatedAt=now,
             };
 
             await _commentRepo.CreateAsync(comment);
@@ -58,18 +59,18 @@ namespace BloggCommunityAPI.Core.Services
                 Id = comment.Id,
                 Text = comment.Text,
                 UserName = "Me", 
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = now,
             };
         }
-        public async Task<bool> DeleteCommentAsync(int commentId, int userId)
-        {
-            var comment = await _commentRepo.GetByIdAsync(commentId);
+        //public async Task<bool> DeleteCommentAsync(int commentId, int userId)
+        //{
+        //    var comment = await _commentRepo.GetByIdAsync(commentId);
      
-            if (comment == null || comment.UserId != userId) return false;
+        //    if (comment == null || comment.UserId != userId) return false;
 
-            _commentRepo.Delete(comment);
-            return await _commentRepo.SaveChangesAsync();
-        }
+        //    _commentRepo.Delete(comment);
+        //    return await _commentRepo.SaveChangesAsync();
+        //}
 
     }
 }

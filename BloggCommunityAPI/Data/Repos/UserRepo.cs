@@ -23,10 +23,7 @@ namespace BloggCommunityAPI.Data.Repos
             _context.Users.Remove(user);
         }
 
-        public async Task<IEnumerable<User>> GetAllUsersAsync()
-        {
-            return await _context.Users.ToListAsync();
-        }
+       
 
         public async Task<User?> GetByEmailAsync(string email)
         {

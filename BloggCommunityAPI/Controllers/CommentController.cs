@@ -1,4 +1,5 @@
 ﻿using BloggCommunityAPI.Core.Interfaces;
+using BloggCommunityAPI.Core.Services;
 using BloggCommunityAPI.Data.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,28 +12,26 @@ namespace BloggCommunityAPI.Controllers
     public class CommentController : ControllerBase
     {
         private readonly ICommentService _commentService;
+        private readonly IUserService _userService;
 
-        public CommentController(ICommentService commentService)
+        public CommentController(ICommentService commentService, IUserService userService)
         {
             _commentService = commentService;
+            _userService = userService;
         }
 
 
-        // GET: api/Comment/GetBypPostId
-        [HttpGet("GetByPostId/{postId}")]
-        public async Task<IActionResult> GetByPost(int postId)
-        {
-            var comments = await _commentService.GetCommentsByPostIdAsync(postId);
-            return Ok(comments);
-        }
 
-        // POST: api/Comment/Create
         [HttpPost("Create")]
         [Authorize]
         public async Task<IActionResult> Create([FromBody] CommentCreateDto dto)
         {
             var userId = GetCurrentUserId();
             if (userId == null) return Unauthorized();
+
+            var user = await _userService.GetByIdAsync(userId.Value);
+            if (user == null) return Unauthorized("Account inactive.");
+
 
             var result = await _commentService.CreateCommentAsync(userId.Value, dto);
 
@@ -45,20 +44,7 @@ namespace BloggCommunityAPI.Controllers
             return Ok(result);
         }
 
-        // DELETE: api/Comment/Delete
-        [HttpDelete("Delete/{id}")]
-        [Authorize]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var userId = GetCurrentUserId();
-            if (userId == null) return Unauthorized();
-
-            var success = await _commentService.DeleteCommentAsync(id, userId.Value);
-
-            if (!success) return Forbid(); 
-
-            return NoContent();
-        }
+   
 
         private int? GetCurrentUserId()
         {

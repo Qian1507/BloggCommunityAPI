@@ -36,41 +36,6 @@ namespace BloggCommunityAPI.Core.Services
             };
         }
 
-        public async Task<CategoryDto?> CreateAsync(CategoryDto dto)
-        {
-            var category = new Category
-            {
-                Name = dto.Name
-            };
-
-            await _categoryRepo.CreateAsync(category);
-            var saved = await _categoryRepo.SaveChangesAsync();
-            if (!saved) return null;
-
-            return new CategoryDto
-            {
-                Id = category.Id,
-                Name = category.Name
-            };
-        }
-
-        public async Task<bool> UpdateAsync(int id, CategoryDto dto)
-        {
-            var category = await _categoryRepo.GetByIdAsync(id);
-            if (category == null) return false;
-
-            category.Name = dto.Name;
-            _categoryRepo.Update(category);
-            return await _categoryRepo.SaveChangesAsync();
-        }
-
-        public async Task<bool> DeleteAsync(int id)
-        {
-            var category = await _categoryRepo.GetByIdAsync(id);
-            if (category == null) return false;
-
-            _categoryRepo.Delete(category);
-            return await _categoryRepo.SaveChangesAsync();
-        }
+     
     }
 }

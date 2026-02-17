@@ -7,7 +7,7 @@ namespace BloggCommunityAPI.Data.Interfaces
         Task<User?> GetByIdAsync(int id);
         Task<User?> GetByEmailAsync(string email);
         Task<User?> GetByUsernameAsync(string username);
-        Task<IEnumerable<User>> GetAllUsersAsync();
+       
         Task CreateAsync(User user);
         void Update(User user);
         void Delete(User user);

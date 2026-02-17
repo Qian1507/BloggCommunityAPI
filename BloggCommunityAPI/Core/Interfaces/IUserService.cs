@@ -10,10 +10,10 @@ namespace BloggCommunityAPI.Core.Interfaces
 
         Task<bool> DeleteUserAsync(int id);
 
-        Task<User?> GetByIdAsync(int id);         
-        Task<IEnumerable<User>> GetAllUsersAsync();
+        Task<User?> GetByIdAsync(int id);
+       
 
-        Task<bool> UpdateUserAsync(int id, string userName, string email);
+        Task<bool> UpdateUserAsync(int id, UserUpdateDto dto);
 
     }
 }

@@ -14,12 +14,7 @@ namespace BloggCommunityAPI.Data.Repos
             _context = context;
         }
 
-        public async Task<Category?> GetByIdAsync(int id)
-        {
-            return await _context.Categories
-                .FirstOrDefaultAsync(c => c.Id == id);
-        }
-
+     
         public async Task<IEnumerable<Category>> GetAllAsync()
         {
             return await _context.Categories
@@ -27,20 +22,12 @@ namespace BloggCommunityAPI.Data.Repos
                 .ToListAsync();
         }
 
-        public async Task CreateAsync(Category category)
+        public async Task<Category?> GetByIdAsync(int id)
         {
-            await _context.Categories.AddAsync(category);
+            return await _context.Categories
+                .FirstOrDefaultAsync(c => c.Id == id);
         }
 
-        public void Update(Category category)
-        {
-            _context.Categories.Update(category);
-        }
-
-        public void Delete(Category category)
-        {
-            _context.Categories.Remove(category);
-        }
 
         public async Task<bool> SaveChangesAsync()
         {

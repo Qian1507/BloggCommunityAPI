@@ -13,22 +13,7 @@ namespace BloggCommunityAPI.Data.Repos
             _context = context;
         }
 
-        public async Task<Comment?> GetByIdAsync(int id)
-        {
-            return await _context.Comments
-                .Include(c => c.User)
-                .Include(c => c.BlogPost)
-                .FirstOrDefaultAsync(c => c.Id == id);
-        }
-
-        public async Task<IEnumerable<Comment>> GetByPostIdAsync(int postId)
-        {
-            return await _context.Comments
-                .Include(c => c.User)
-                .Where(c => c.BlogPostId == postId)
-                .OrderByDescending(c => c.CreatedAt)
-                .ToListAsync();
-        }
+        
        
         public async Task CreateAsync(Comment comment)
         {

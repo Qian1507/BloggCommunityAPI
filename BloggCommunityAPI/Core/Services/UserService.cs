@@ -58,22 +58,21 @@ namespace BloggCommunityAPI.Core.Services
             return await _userRepo.GetByIdAsync(id);
         }
 
-        public async Task<IEnumerable<User>> GetAllUsersAsync()
-        {
-            return await _userRepo.GetAllUsersAsync();
-        }
-        public async Task<bool> UpdateUserAsync(int id, string userName, string email)
+       
+        public async Task<bool> UpdateUserAsync(int id, UserUpdateDto dto)
         {
             var user = await _userRepo.GetByIdAsync(id);
             if (user == null) return false;
 
-            
+            var email= dto.Email;
+            var userName= dto.UserName;
+
             var exists = await _userRepo.UserExistsAsync(email, userName);
             if (exists && (user.Email != email || user.UserName != userName))
                 return false;
 
-            user.UserName = userName;
-            user.Email = email;
+            user.UserName = dto.UserName;
+            user.Email = dto.Email;
 
             _userRepo.Update(user);
             return await _userRepo.SaveChangesAsync();

@@ -59,3 +59,34 @@ This project meets high-security standards (VG level) by implementing:
 1.  **Clone the Repository**:
     ```bash
     git clone https://github.com/Qian1507/BloggCommunityAPI.git
+2.  **Update Database Connection**:
+    Update the `ConnectionStrings` in `appsettings.json` to point to your local SQL Server instance.
+3.  **Apply Migrations**:
+    ```bash
+    dotnet ef database update
+    ```
+4.  **Run the Project**:
+    ```bash
+    dotnet run
+    ```
+5.  **Test the API**:
+    Open `https://localhost:[port]/swagger` in your browser to explore the API.
+
+---
+
+## 📂 Architecture Overview
+The project follows a clean separation of concerns:
+* **Controllers**: Handle HTTP requests and map status codes ($200, 204, 401, 403, 404$).
+* **Services**: Encapsulate business logic and permission checks.
+* **Repositories**: Manage data persistence using Entity Framework.
+* **DTOs**: Ensure clean data transfer and hide sensitive database structures.
+
+---
+
+## 🧑‍💻 Author
+Developed as part of the Web Development Course Requirement.
+
+
+
+
+    

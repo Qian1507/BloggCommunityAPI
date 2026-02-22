@@ -20,8 +20,8 @@ A robust, secure, and fully documented RESTful API for a Blogging platform. Buil
 
 ---
 
-## 🔑 Security & "VG" Logic Highlights
-This project meets high-security standards (VG level) by implementing:
+## 🔑 Security & Logic Highlights
+This project meets high-security standards  by implementing:
 
 1.  **Implicit User Identification**: For user-specific actions (like updating profile or deleting account), the system identifies the user via the **JWT Claim**, eliminating the need to pass `userId` in the request body for better security.
 2.  **Strict Ownership Verification**: Before any `Update` or `Delete` of a post, the system performs a three-step check:
